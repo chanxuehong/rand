@@ -8,7 +8,7 @@ import (
 
 var globalMathRand = mathrand.New(mathrand.NewSource(time.Now().UnixNano()))
 
-// Read reads len(p) bytes random value to p.
+// Read reads len(p)-byte raw random bytes to p.
 func Read(p []byte) {
 	if len(p) <= 0 {
 		return
