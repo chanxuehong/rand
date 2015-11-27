@@ -55,8 +55,7 @@ func Rand() (rd [16]byte) {
 	src[9] = byte(sequence)
 	copy(src[10:], randSalt)
 
-	rd = md5.Sum(src[:])
-	return
+	return md5.Sum(src[:])
 }
 
 // RandHex returns 32-byte hex-encoded bytes.
