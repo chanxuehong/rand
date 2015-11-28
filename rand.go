@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	randSaltLen            = 45   // see Rand(), 6+4+45==55<56, Best performance for md5
+	randSaltLen            = 45   // see New(), 6+4+45==55<56, Best performance for md5
 	randSaltUpdateInterval = 3600 // seconds
 )
 
@@ -21,9 +21,9 @@ var (
 	randSaltLastUpdateTime int64 = -randSaltUpdateInterval
 )
 
-// Rand returns 16-byte raw random bytes.
+// New returns 16-byte raw random bytes.
 // It is not printable, you can use encoding/hex or encoding/base64 to print it.
-func Rand() (rd [16]byte) {
+func New() (rd [16]byte) {
 	timeNow := time.Now()
 	timeNowUnix := timeNow.Unix()
 
@@ -58,9 +58,9 @@ func Rand() (rd [16]byte) {
 	return md5.Sum(src[:])
 }
 
-// RandHex returns 32-byte hex-encoded bytes.
-func RandHex() (rd []byte) {
-	rdx := Rand()
+// NewHex returns 32-byte hex-encoded bytes.
+func NewHex() (rd []byte) {
+	rdx := New()
 	rd = make([]byte, hex.EncodedLen(len(rdx)))
 	hex.Encode(rd, rdx[:])
 	return
