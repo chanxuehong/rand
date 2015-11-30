@@ -9,16 +9,16 @@ import (
 )
 
 const (
-	randSaltLen            = 45   // see New(), 6+4+45==55<56, Best performance for md5
-	randSaltUpdateInterval = 3600 // seconds
+	saltLen            = 45   // see New(), 6+4+45==55<56, Best performance for md5
+	saltUpdateInterval = 3600 // seconds
 )
 
 var (
-	randSalt     = make([]byte, randSaltLen)
-	randSequence = Uint32()
+	gSalt     = make([]byte, saltLen)
+	gSequence = Uint32()
 
-	mutex                       sync.Mutex
-	randSaltLastUpdateTimestamp int64 = -randSaltUpdateInterval
+	gMutex                   sync.Mutex
+	gSaltLastUpdateTimestamp int64 = -saltUpdateInterval
 )
 
 // New returns 16-byte raw random bytes.
@@ -27,22 +27,22 @@ func New() (rd [16]byte) {
 	timeNow := time.Now()
 	timeNowUnix := timeNow.Unix()
 
-	if timeNowUnix >= atomic.LoadInt64(&randSaltLastUpdateTimestamp)+randSaltUpdateInterval {
-		mutex.Lock() // Lock
-		if timeNowUnix >= randSaltLastUpdateTimestamp+randSaltUpdateInterval {
-			randSaltLastUpdateTimestamp = timeNowUnix
-			mutex.Unlock() // Unlock
+	if timeNowUnix >= atomic.LoadInt64(&gSaltLastUpdateTimestamp)+saltUpdateInterval {
+		gMutex.Lock() // Lock
+		if timeNowUnix >= gSaltLastUpdateTimestamp+saltUpdateInterval {
+			gSaltLastUpdateTimestamp = timeNowUnix
+			gMutex.Unlock() // Unlock
 
-			Read(randSalt)
-			copy(rd[:], randSalt)
+			Read(gSalt)
+			copy(rd[:], gSalt)
 			return
 		}
-		mutex.Unlock() // Unlock
+		gMutex.Unlock() // Unlock
 	}
-	sequence := atomic.AddUint32(&randSequence, 1)
+	sequence := atomic.AddUint32(&gSequence, 1)
 
-	var src [6 + 4 + randSaltLen]byte // 6+4+45==55
 	timeNowUnixNano := timeNow.UnixNano()
+	var src [6 + 4 + saltLen]byte // 6+4+45==55
 	src[0] = byte(timeNowUnixNano >> 40)
 	src[1] = byte(timeNowUnixNano >> 32)
 	src[2] = byte(timeNowUnixNano >> 24)
@@ -53,7 +53,7 @@ func New() (rd [16]byte) {
 	src[7] = byte(sequence >> 16)
 	src[8] = byte(sequence >> 8)
 	src[9] = byte(sequence)
-	copy(src[10:], randSalt)
+	copy(src[10:], gSalt)
 
 	return md5.Sum(src[:])
 }
