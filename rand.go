@@ -17,8 +17,8 @@ var (
 	randSalt     = make([]byte, randSaltLen)
 	randSequence = Uint32()
 
-	mutex                  sync.Mutex
-	randSaltLastUpdateTime int64 = -randSaltUpdateInterval
+	mutex                       sync.Mutex
+	randSaltLastUpdateTimestamp int64 = -randSaltUpdateInterval
 )
 
 // New returns 16-byte raw random bytes.
@@ -27,10 +27,10 @@ func New() (rd [16]byte) {
 	timeNow := time.Now()
 	timeNowUnix := timeNow.Unix()
 
-	if timeNowUnix >= atomic.LoadInt64(&randSaltLastUpdateTime)+randSaltUpdateInterval {
+	if timeNowUnix >= atomic.LoadInt64(&randSaltLastUpdateTimestamp)+randSaltUpdateInterval {
 		mutex.Lock() // Lock
-		if timeNowUnix >= randSaltLastUpdateTime+randSaltUpdateInterval {
-			randSaltLastUpdateTime = timeNowUnix
+		if timeNowUnix >= randSaltLastUpdateTimestamp+randSaltUpdateInterval {
+			randSaltLastUpdateTimestamp = timeNowUnix
 			mutex.Unlock() // Unlock
 
 			Read(randSalt)
