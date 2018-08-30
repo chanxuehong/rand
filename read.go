@@ -6,7 +6,9 @@ import (
 	"time"
 )
 
-var gMathRand = mathrand.New(mathrand.NewSource(time.Now().UnixNano()))
+func init() {
+	mathrand.Seed(time.Now().UnixNano())
+}
 
 // Read reads len(p)-byte raw random bytes to p.
 func Read(p []byte) {
@@ -23,7 +25,7 @@ func Read(p []byte) {
 	timeNowNano := int64(time.Now().Nanosecond())
 	timeNowNano = timeNowNano<<32 | timeNowNano
 	for len(p) > 0 {
-		n := gMathRand.Int63() ^ timeNowNano
+		n := mathrand.Int63() ^ timeNowNano
 		switch len(p) {
 		case 8:
 			p[0] = byte(n >> 56)
