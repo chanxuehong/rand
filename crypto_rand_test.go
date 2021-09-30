@@ -180,12 +180,12 @@ func TestCryptoRand_Intn(t *testing.T) {
 		return
 	}
 
-	n3, err := r.Intn(1<<(intSize-1) - 100)
+	n3, err := r.Intn(maxInt - 100)
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if n3 < 0 || n3 >= 1<<(intSize-1)-100 {
+	if n3 < 0 || n3 >= maxInt-100 {
 		t.Error("not in range")
 		return
 	}

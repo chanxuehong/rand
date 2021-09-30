@@ -3,6 +3,7 @@ package rand
 const intSize = 32 << ((^uint(0) >> 32) & 1)
 
 const (
+	maxInt   = 1<<(intSize-1) - 1
 	maxInt32 = 1<<31 - 1
 	maxInt64 = 1<<63 - 1
 )
