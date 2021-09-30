@@ -1,5 +1,12 @@
 package rand
 
+const intSize = 32 << ((^uint(0) >> 32) & 1)
+
+const (
+	maxInt32 = 1<<31 - 1
+	maxInt64 = 1<<63 - 1
+)
+
 // Read generates len(p) random bytes and writes them into p.
 func Read(p []byte) { _, _ = globalRand.Read(p) }
 

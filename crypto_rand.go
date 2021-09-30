@@ -2,7 +2,6 @@ package rand
 
 import (
 	"crypto/rand"
-	"strconv"
 )
 
 func newCryptoRand() cryptoRand {
@@ -20,8 +19,9 @@ func (r cryptoRand) Float32() (float32, error) {
 	if err != nil {
 		return 0, err
 	}
-	const shiftBits = 32 - 24
-	return float32((n<<shiftBits)>>shiftBits) / (1 << 24), nil
+	const significandBits = 24
+	const nonSignificandBits = 32 - significandBits
+	return float32((n<<nonSignificandBits)>>nonSignificandBits) / (1 << significandBits), nil
 }
 
 func (r cryptoRand) Float64() (float64, error) {
@@ -29,12 +29,13 @@ func (r cryptoRand) Float64() (float64, error) {
 	if err != nil {
 		return 0, err
 	}
-	const shiftBits = 64 - 53
-	return float64((n<<shiftBits)>>shiftBits) / (1 << 53), nil
+	const significandBits = 53
+	const nonSignificandBits = 64 - significandBits
+	return float64((n<<nonSignificandBits)>>nonSignificandBits) / (1 << significandBits), nil
 }
 
 func (r cryptoRand) Int() (int, error) {
-	if strconv.IntSize == 32 {
+	if intSize == 32 {
 		n, err := r.Int31()
 		return int(n), err
 	}
@@ -46,7 +47,7 @@ func (r cryptoRand) Intn(n int) (int, error) {
 	if n <= 0 {
 		panic("invalid argument to Intn")
 	}
-	if n <= 1<<31-1 {
+	if n <= maxInt32 {
 		x, err := r.Int31n(int32(n))
 		return int(x), err
 	}
@@ -70,7 +71,7 @@ func (r cryptoRand) Int31n(n int32) (int32, error) {
 		x, err := r.Int31()
 		return x & (n - 1), err
 	}
-	max := int32((1 << 31) - 1 - (1<<31)%uint32(n))
+	max := int32(maxInt32 - (1<<31)%uint32(n)) // (max-0+1)%n == 0
 	x, err := r.Int31()
 	if err != nil {
 		return 0, err
@@ -100,7 +101,7 @@ func (r cryptoRand) Int63n(n int64) (int64, error) {
 		x, err := r.Int63()
 		return x & (n - 1), err
 	}
-	max := int64((1 << 63) - 1 - (1<<63)%uint64(n))
+	max := int64(maxInt64 - (1<<63)%uint64(n)) // (max-0+1)%n == 0
 	x, err := r.Int63()
 	if err != nil {
 		return 0, err
@@ -115,7 +116,7 @@ func (r cryptoRand) Int63n(n int64) (int64, error) {
 }
 
 func (r cryptoRand) Uint() (uint, error) {
-	if strconv.IntSize == 32 {
+	if intSize == 32 {
 		n, err := r.Uint32()
 		return uint(n), err
 	}

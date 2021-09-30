@@ -2,7 +2,6 @@ package rand
 
 import (
 	"math/rand"
-	"strconv"
 	"sync"
 	"time"
 )
@@ -82,7 +81,7 @@ func (r *mathRand) Int63n(n int64) int64 {
 }
 
 func (r *mathRand) Uint() uint {
-	if strconv.IntSize == 32 {
+	if intSize == 32 {
 		return uint(r.Uint32())
 	}
 	return uint(r.Uint64())
