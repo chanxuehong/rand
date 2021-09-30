@@ -8,8 +8,8 @@ const (
 	maxInt64 = 1<<63 - 1
 )
 
-// Read generates len(p) random bytes and writes them into p.
-func Read(p []byte) { _, _ = globalRand.Read(p) }
+// Read generates len(p) random bytes and writes them into p. It always returns len(p) and a nil error.
+func Read(p []byte) (n int, err error) { return globalRand.Read(p) }
 
 // Float32 returns, as a float32, a random number in the half-open interval [0.0,1.0).
 func Float32() float32 { return globalRand.Float32() }
