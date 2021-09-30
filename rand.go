@@ -55,6 +55,8 @@ func NewRand() *Rand {
 }
 
 // Rand is similar to "math/rand.Rand", but it prefers "crypto/rand" to generate random bytes.
+//
+// unlike "math/rand.Rand", all methods of *Rand are safe for concurrent use by multiple goroutines.
 type Rand struct {
 	cryptoRand cryptoRand
 	mathRand   *mathRand
